@@ -1,0 +1,51 @@
+<script>
+//<![CDATA[
+(function(){
+  // 1. Cookies do teu tema
+  var cookiesTema = ["menu.color","title.color","title.hover","read.bg"];
+
+  // 2. Chaves da Clever
+  var cleverKeys = ["clever-core","clever-ad-frequency","clever-ads-shown","clever-consent","clever-user"];
+
+  // Função pra deixar anúncio fixo no scroll
+  function fixarAnuncio(){
+    var anuncio = document.querySelector('.anuncio-fixo');
+    if(anuncio){
+      anuncio.style.position = 'sticky';
+      anuncio.style.top = '10px';
+      anuncio.style.zIndex = '999';
+    }
+  }
+
+  // Função pra limpar e resetar
+  function resetarLoop(){
+    // Limpa cookies do tema
+    for(var i=0; i<cookiesTema.length; i++){
+      var n = cookiesTema[i];
+      document.cookie = n + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+      document.cookie = n + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=" + location.hostname;
+      document.cookie = n + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=." + location.hostname;
+    }
+
+    // Limpa memória da Clever
+    for(var j=0; j<cleverKeys.length; j++){
+      localStorage.removeItem(cleverKeys[j]);
+      sessionStorage.removeItem(cleverKeys[j]);
+    }
+
+    // Limpa slot e força Clever recarregar
+    document.querySelectorAll('[data-clever]').forEach(function(s){ s.innerHTML = ""; });
+    if(window.CleverCore && CleverCore.reload){ CleverCore.reload(); }
+  }
+
+  // Roda ao carregar
+  window.addEventListener('scroll', fixarAnuncio);
+  fixarAnuncio();
+  setTimeout(resetarLoop, 3000); // primeira limpeza após 3s
+
+  // LOOP INFINITO: roda a cada 10 segundos
+  setInterval(resetarLoop, 10000);
+
+})();
+//]]>
+</script>
